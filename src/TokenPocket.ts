@@ -1,27 +1,27 @@
-import tp from 'tp-eosjs'
+import tp from "tp-eosjs";
 import {
   Authenticator,
   ButtonStyle,
   Chain,
   UALError,
   UALErrorType,
-  User
-} from 'universal-authenticator-library'
+  User,
+} from "universal-authenticator-library";
 
-import { Name, WalletResponse } from './interfaces'
-import { tokenPocketLogo } from './tokenPocketLogo'
-import { TokenPocketUser } from './TokenPocketUser'
-import { UALTokenPocketError } from './UALTokenPocketError'
+import { Name, WalletResponse } from "./interfaces";
+import { tokenPocketLogo } from "./tokenPocketLogo";
+import { TokenPocketUser } from "./TokenPocketUser";
+import { UALTokenPocketError } from "./UALTokenPocketError";
 
 export class TokenPocket extends Authenticator {
-  private users: TokenPocketUser[] = []
-  private tokenPocketIsLoading: boolean = true
-  private initError: UALError | null = null
+  private users: TokenPocketUser[] = [];
+  private tokenPocketIsLoading: boolean = true;
+  private initError: UALError | null = null;
 
-  private readonly supportedChains = {
-    // Token Pocket only supports mainnet
-    aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906: {},
-  }
+  // private readonly supportedChains = {
+  //   // Token Pocket only supports mainnet
+  //   aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906: {},
+  // };
 
   /**
    * TokenPocket Constructor.
@@ -29,25 +29,25 @@ export class TokenPocket extends Authenticator {
    * @param chains
    */
   constructor(chains: Chain[]) {
-    super(chains)
+    super(chains);
   }
 
   private isTokenPocketReady(): boolean {
-    return tp.isConnected()
+    return tp.isConnected();
   }
 
   private supportsAllChains(): boolean {
     if (this.chains.length < 1) {
-      return false
+      return false;
     }
 
-    for (const chain of this.chains) {
-      if (!this.supportedChains.hasOwnProperty(chain.chainId)) {
-        return false
-      }
-    }
+    // for (const chain of this.chains) {
+    //   if (!this.supportedChains.hasOwnProperty(chain.chainId)) {
+    //     return false
+    //   }
+    // }
 
-    return true
+    return true;
   }
 
   /**
@@ -56,34 +56,35 @@ export class TokenPocket extends Authenticator {
    * throwing an initialization error.
    */
   public async init(): Promise<void> {
-    this.tokenPocketIsLoading = true
+    this.tokenPocketIsLoading = true;
     try {
       if (!this.isTokenPocketReady()) {
-        throw new Error('Unable to connect')
+        throw new Error("Unable to connect");
       }
     } catch (e) {
       this.initError = new UALTokenPocketError(
-        'Error occurred during autologin',
+        "Error occurred during autologin",
         UALErrorType.Initialization,
-        e)
+        e
+      );
     } finally {
-      this.tokenPocketIsLoading = false
+      this.tokenPocketIsLoading = false;
     }
   }
 
   public reset(): void {
-    this.initError = null
+    this.initError = null;
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.init()
+    this.init();
   }
 
   public getStyle(): ButtonStyle {
     return {
       icon: tokenPocketLogo,
       text: Name,
-      textColor: 'white',
-      background: '#347CEE'
-    }
+      textColor: "white",
+      background: "#347CEE",
+    };
   }
 
   /**
@@ -92,15 +93,15 @@ export class TokenPocket extends Authenticator {
    */
   public shouldRender(): boolean {
     if (this.supportsAllChains() && this.isTokenPocketReady()) {
-      return true
+      return true;
     }
 
-    return false
+    return false;
   }
 
   public shouldAutoLogin(): boolean {
     // Always autologin if should render, since that should only be inside the Token Pocket browser
-    return this.shouldRender()
+    return this.shouldRender();
   }
 
   /**
@@ -110,21 +111,22 @@ export class TokenPocket extends Authenticator {
   public async login(): Promise<User[]> {
     if (this.users.length === 0) {
       try {
-        const response: WalletResponse = await tp.getCurrentWallet()
+        const response: WalletResponse = await tp.getCurrentWallet();
         if (response.result) {
-          this.users.push(new TokenPocketUser(this.chains[0], response.data))
+          this.users.push(new TokenPocketUser(this.chains[0], response.data));
         } else {
-          throw new Error('No result returned')
+          throw new Error("No result returned");
         }
       } catch (e) {
         throw new UALTokenPocketError(
-          'Unable to get the current account during login',
+          "Unable to get the current account during login",
           UALErrorType.Login,
-          e)
+          e
+        );
       }
     }
 
-    return this.users
+    return this.users;
   }
 
   /**
@@ -134,34 +136,34 @@ export class TokenPocket extends Authenticator {
    * refresh the user list on the authenticator
    */
   public async logout(): Promise<void> {
-    this.users = []
+    this.users = [];
   }
 
   public async shouldRequestAccountName(): Promise<boolean> {
-    return false
+    return false;
   }
 
   public isLoading(): boolean {
-    return this.tokenPocketIsLoading
+    return this.tokenPocketIsLoading;
   }
 
   public isErrored(): boolean {
-    return !!this.initError
+    return !!this.initError;
   }
 
   public getError(): UALError | null {
-    return this.initError
+    return this.initError;
   }
 
   public getOnboardingLink(): string {
-    return 'https://www.tokenpocket.pro/en/'
+    return "https://www.tokenpocket.pro/en/";
   }
 
   public requiresGetKeyConfirmation(): boolean {
-    return false
+    return false;
   }
 
   public getName(): string {
-    return Name
+    return Name;
   }
 }

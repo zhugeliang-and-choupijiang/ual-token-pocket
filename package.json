@@ -1,12 +1,9 @@
 {
-  "name": "ual-token-pocket",
+  "name": "@timicool/ual-token-pocket",
   "version": "0.3.0",
   "main": "dist/index.js",
   "license": "MIT",
-  "author": {
-    "name": "block.one",
-    "url": "https://block.one"
-  },
+  "author": "block.one (https://block.one)",
   "contributors": [
     "Tara Tritt"
   ],
@@ -32,7 +29,7 @@
   "description": "UAL Authenticator for Token Pocket mobile app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EOSIO/ual-token-pocket.git"
+    "url": "git+https://github.com/zhugeliang-and-choupijiang/ual-token-pocket.git"
   },
   "bugs": {
     "url": "https://github.com/EOSIO/ual-token-pocket/issues"
